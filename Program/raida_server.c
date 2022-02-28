@@ -592,13 +592,13 @@ int main(int argc, char *argv[]) {
     }
   }
   srand(time(NULL));
-  //init_udp_socket();
+  init_udp_socket();
   pthread_t ptid[4];
-  //pthread_create(&ptid[0], NULL, &backup_an_thread, NULL);
-  /*
+  pthread_create(&ptid[0], NULL, &backup_an_thread, NULL);
+  
   while(1) {
     listen_request();
-  } */
-  //rename_an_files(1,1);
+  } 
+  rename_an_files(1,1);
   return 0;
 }
