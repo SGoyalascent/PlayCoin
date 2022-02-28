@@ -10,6 +10,7 @@
 #include <sys/types.h>
 
 #define   SHARDS_MAX      32
+
 char execpath[256];
 unsigned char shards_config[SHARDS_MAX];
 void getexepath() {
@@ -28,51 +29,39 @@ void getexepath() {
 void main(){
 
 	FILE *fp_inp = NULL;
-	char *file_names[25]={"/deployment_data/raida0/data/shards.bin",
-                        "/deployment_data/raida1/data/shards.bin",
-						            "/deployment_data/raida2/data/shards.bin",
-                        "/deployment_data/raida3/data/shards.bin",
-						            "/deployment_data/raida4/data/shards.bin",
-                        "/deployment_data/raida5/data/shards.bin",
-						            "/deployment_data/raida6/data/shards.bin",
-                        "/deployment_data/raida7/data/shards.bin",
-						            "/deployment_data/raida8/data/shards.bin",
-                        "/deployment_data/raida9/data/shards.bin",
-						            "/deployment_data/raida10/data/shards.bin",
-                        "/deployment_data/raida11/data/shards.bin",
-						            "/deployment_data/raida12/data/shards.bin",
-                        "/deployment_data/raida13/data/shards.bin",
-						            "/deployment_data/raida14/data/shards.bin",
-                        "/deployment_data/raida15/data/shards.bin",
-						            "/deployment_data/raida16/data/shards.bin",
-                        "/deployment_data/raida17/data/shards.bin",
-						            "/deployment_data/raida18/data/shards.bin",
-                        "/deployment_data/raida19/data/shards.bin",
-						            "/deployment_data/raida20/data/shards.bin",
-                        "/deployment_data/raida21/data/shards.bin",
-						            "/deployment_data/raida22/data/shards.bin",
-                        "/deployment_data/raida23/data/shards.bin",
-						            "/deployment_data/raida24/data/shards.bin"};
+	char *file_names[25]={"/opt/raida0/Data/shards.bin",
+                        "/opt/raida1/Data/shards.bin",
+                        "/opt/raida2/Data/shards.bin",
+                        "/opt/raida3/Data/shards.bin",
+                        "/opt/raida4/Data/shards.bin",
+                        "/opt/raida5/Data/shards.bin",
+                        "/opt/raida6/Data/shards.bin",
+                        "/opt/raida7/Data/shards.bin",
+                        "/opt/raida8/Data/shards.bin",
+                        "/opt/raida9/Data/shards.bin",
+                        "/opt/raida10/Data/shards.bin",
+                        "/opt/raida11/Data/shards.bin",
+                        "/opt/raida12/Data/shards.bin",
+                        "/opt/raida13/Data/shards.bin",
+                        "/opt/raida14/Data/shards.bin",
+                        "/opt/raida15/Data/shards.bin",
+                        "/opt/raida16/Data/shards.bin",
+                        "/opt/raida17/Data/shards.bin",
+                        "/opt/raida18/Data/shards.bin",
+                        "/opt/raida19/Data/shards.bin",
+                        "/opt/raida20/Data/shards.bin",
+                        "/opt/raida21/Data/shards.bin",
+                        "/opt/raida22/Data/shards.bin",
+                        "/opt/raida23/Data/shards.bin",
+                        "/opt/raida24/Data/shards.bin"};	
 
-
-
-  getexepath();
 
   for(int i = 0; i < 25; i++) {
-
-    //printf("RAIDA-Id: %d\n", i);
-  //--------------------------------------
-  //WRITE
-  //---------------------------------------
-    
-    //printf("WRITE IN FILE\n");
-    //FILE *fp_inp = NULL;
+  
     unsigned char buffer[SHARDS_MAX];
     char path[256];
-    strcpy(path,execpath);
-    strcat(path, file_names[i]);
+    strcpy(path, file_names[i]);
     printf("path: %s\n", path);
-    //strcat(path,"/Data/shards.bin");
 
     for(int j=0; j < SHARDS_MAX; j++) {
       buffer[j] = 0xff;
@@ -83,17 +72,10 @@ void main(){
     fwrite(buffer, 1, SHARDS_MAX, fp_inp);
     fclose(fp_inp);
 
-  
-  //--------------------------------------
-  //READ
-  //---------------------------------------
+//-------------------------------------------------------
     
-    //printf("READ FROM FILE\n");
-    //FILE *fp_inp = NULL;
     unsigned char buff[SHARDS_MAX];
-    //char path[256];
-    //strcpy(path,execpath);
-    //strcat(path,file_names[i]);
+  
     if ((fp_inp = fopen(path, "rb")) == NULL) {
       perror("fread: shards.bin Cannot be opened , exiting \n");
     }

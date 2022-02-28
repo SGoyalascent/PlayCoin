@@ -51,62 +51,57 @@ void main(){
 	struct server_config server_config_obj;
 	unsigned char path[256];
 
-	char *file_names[25]={"	/raida0/data/server.bin",
-							"/raida1/data/server.bin",
-						  "/raida2/data/server.bin",
-						  "/raida3/data/server.bin",
-						   "/raida4/data/server.bin",
-						   "/raida5/data/server.bin",
-						   "/raida6/data/server.bin",
-						   "/raida7/data/server.bin",
-						   "/raida8/data/server.bin",
-						   "/raida9/data/server.bin",
-						   "/raida10/data/server.bin",
-						   "/raida11/data/server.bin",
-						   "/raida12/data/server.bin",
-						   "/raida13/data/server.bin",
-						   "/raida14/data/server.bin",
-						   "/raida15/data/server.bin",
-						   "/raida16/data/server.bin",
-						   "/raida17/data/server.bin",
-						   "/raida18/data/server.bin",
-						   "/raida19/data/server.bin",
-						   "/raida20/data/server.bin",
-						   "/raida21/data/server.bin",
-						   "/raida22/data/server.bin",
-						   "/raida23/data/server.bin",
-						   "/raida24/data/server.bin"};	
+	char *file_names[25]={ "/opt/raida0/Data/server.bin",
+						   "/opt/raida1/Data/server.bin",
+						   "/opt/raida2/Data/server.bin",
+						   "/opt/raida3/Data/server.bin",
+						   "/opt/raida4/Data/server.bin",
+						   "/opt/raida5/Data/server.bin",
+						   "/opt/raida6/Data/server.bin",
+						   "/opt/raida7/Data/server.bin",
+						   "/opt/raida8/Data/server.bin",
+						   "/opt/raida9/Data/server.bin",
+						   "/opt/raida10/Data/server.bin",
+						   "/opt/raida11/Data/server.bin",
+						   "/opt/raida12/Data/server.bin",
+						   "/opt/raida13/Data/server.bin",
+						   "/opt/raida14/Data/server.bin",
+						   "/opt/raida15/Data/server.bin",
+						   "/opt/raida16/Data/server.bin",
+						   "/opt/raida17/Data/server.bin",
+						   "/opt/raida18/Data/server.bin",
+						   "/opt/raida19/Data/server.bin",
+						   "/opt/raida20/Data/server.bin",
+						   "/opt/raida21/Data/server.bin",
+						   "/opt/raida22/Data/server.bin",
+						   "/opt/raida23/Data/server.bin",
+						   "/opt/raida24/Data/server.bin"};	
 						   
 	
-	unsigned char buff[SERVER_CONFIG_BYTES] = {0,0,0,10,6,6,0,150,0,150,0,150,4,0,60,6,30,1,0,1};
+	unsigned char buffer[SERVER_CONFIG_BYTES] = {0,0,0,10,6,6,0,150,0,150,0,150,4,0,60,6,30,1,0,1};
 	
 	getexepath();
 	for(int i=0;i<25;i++){
 		uint16_t port = 30000;
-		getexepath();
-		//strcpy(path,"");
-		strcpy(path,execpath);
-		strcat(path,file_names[i]);
-		printf("\n%s\n",path);
+		strcpy(path,file_names[i]);
+		printf("path: %s\n", path);
 		port = port + i;
 
-		buff[0]=(unsigned char)( (i));
-		buff[1]=(unsigned char)(port >> 8);
-		buff[2]=(unsigned char)port;
+		buffer[0]=(unsigned char)( (i));
+		buffer[1]=(unsigned char)(port >> 8);
+		buffer[2]=(unsigned char)port;
 
-		if ((fp_inp = fopen(path, "wb")) == NULL) {    //rb+
-			perror("\n server.bin Cannot be opened , exiting \n");
+		if ((fp_inp = fopen(path, "wb")) == NULL) {   
+			perror("\n fwrite: server.bin Cannot be opened , exiting \n");
 		}
-		fwrite(buff ,sizeof(buff),1,fp_inp);
+		fwrite(buffer ,sizeof(buffer),1,fp_inp);
 		fclose(fp_inp);
 //---------------------------------------------------------------------
+	
 		int cnt=0;
 		unsigned char buff[SERVER_CONFIG_BYTES];
-		//char path[256];
-		//strcpy(path,execpath);
-		//strcat(path,"/Data/server.bin");
 		if ((fp_inp = fopen(path, "rb")) == NULL) {
-			printf("server.bin Cannot be opened , exiting \n");
+			printf("fread: server.bin Cannot be opened , exiting \n");
 		}
 		if(fread(buff, 1, SERVER_CONFIG_BYTES, fp_inp)<SERVER_CONFIG_BYTES){
 			printf("Configuration parameters missing in server.bin \n");
@@ -132,7 +127,7 @@ void main(){
 		server_config_obj.my_id_coins_cnt= buff[19];
 		server_config_obj.my_id_coins_cnt |= (((uint16_t)buff[18])<<8);
 		printf("------------------------------\n");
-		printf("Server Configuration Details..\n");
+		printf("RAIDA-%d  Server Configuration Details..\n", i);
 		printf("------------------------------\n");
 		printf("Raida_Id  :-%d \n", server_config_obj.raida_id);
 		printf("Port Number :- %d \n", server_config_obj.port_number);

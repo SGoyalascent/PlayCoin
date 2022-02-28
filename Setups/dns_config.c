@@ -38,35 +38,35 @@ void getexepath() {
 void main(){
 
 	FILE *fp_inp = NULL;
-	char *file_names[25]={"/deployment_data/raida0/data/shards.bin",
-                        "/deployment_data/raida1/data/shards.bin",
-						            "/deployment_data/raida2/data/dns.bin",
-                        "/deployment_data/raida3/data/dns.bin",
-						            "/deployment_data/raida4/data/dns.bin",
-                        "/deployment_data/raida5/data/dns.bin",
-						            "/deployment_data/raida6/data/dns.bin",
-                        "/deployment_data/raida7/data/dns.bin",
-						            "/deployment_data/raida8/data/dns.bin",
-                        "/deployment_data/raida9/data/dns.bin",
-						            "/deployment_data/raida10/data/dns.bin",
-                        "/deployment_data/raida11/data/dns.bin",
-						            "/deployment_data/raida12/data/dns.bin",
-                        "/deployment_data/raida13/data/dns.bin",
-						            "/deployment_data/raida14/data/dns.bin",
-                        "/deployment_data/raida15/data/dns.bin",
-						            "/deployment_data/raida16/data/dns.bin",
-                        "/deployment_data/raida17/data/dns.bin",
-						            "/deployment_data/raida18/data/dns.bin",
-                        "/deployment_data/raida19/data/dns.bin",
-						            "/deployment_data/raida20/data/dns.bin",
-                        "/deployment_data/raida21/data/dns.bin",
-						            "/deployment_data/raida22/data/dns.bin",
-                        "/deployment_data/raida23/data/dns.bin",
-						            "/deployment_data/raida24/data/dns.bin"};
+	
+  char *file_names[25]={"/opt/raida0/Data/dns.bin",
+                        "/opt/raida1/Data/dns.bin",
+                        "/opt/raida2/Data/dns.bin",
+                        "/opt/raida3/Data/dns.bin",
+                        "/opt/raida4/Data/dns.bin",
+                        "/opt/raida5/Data/dns.bin",
+                        "/opt/raida6/Data/dns.bin",
+                        "/opt/raida7/Data/dns.bin",
+                        "/opt/raida8/Data/dns.bin",
+                        "/opt/raida9/Data/dns.bin",
+                        "/opt/raida10/Data/dns.bin",
+                        "/opt/raida11/Data/dns.bin",
+                        "/opt/raida12/Data/dns.bin",
+                        "/opt/raida13/Data/dns.bin",
+                        "/opt/raida14/Data/dns.bin",
+                        "/opt/raida15/Data/dns.bin",
+                        "/opt/raida16/Data/dns.bin",
+                        "/opt/raida17/Data/dns.bin",
+                        "/opt/raida18/Data/dns.bin",
+                        "/opt/raida19/Data/dns.bin",
+                        "/opt/raida20/Data/dns.bin",
+                        "/opt/raida21/Data/dns.bin",
+                        "/opt/raida22/Data/dns.bin",
+                        "/opt/raida23/Data/dns.bin",
+                        "/opt/raida24/Data/dns.bin"};
 
 
-
-  getexepath();
+  //getexepath();
   union coversion{
     unsigned char data[4];
     unsigned char data2[2];
@@ -76,18 +76,9 @@ void main(){
   int dns_size = RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX);
   for(int i = 0; i < 25; i++) {
 
-    //printf("RAIDA-Id: %d\n", i);
-  //--------------------------------------
-  //WRITE
-  //---------------------------------------
-    
-    //printf("WRITE IN FILE\n");
-    //FILE *fp_inp = NULL;
     unsigned char buffer[dns_size];
     char path[256];
-    strcpy(path,execpath);
-    strcat(path, file_names[i]);
-    //strcat(path,"/dns1.bin");
+    strcpy(path, file_names[i]);
     printf("path: %s\n", path);
     
     int port = 30000;
@@ -108,22 +99,16 @@ void main(){
     }
     fwrite(buffer, 1, dns_size, fp_inp);
     fclose(fp_inp);
-
-  //--------------------------------------
-  //READ
-  //---------------------------------------
     
-  
+//------------------------------------------------------------
+
   int j=0,index=0;
   unsigned int dns_port;
   char dns_ip[64],tmp[16];
   unsigned char buff[RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX)];
   
-  //char path[256];
-  //strcpy(path,execpath);
-  //strcat(path,"/dns1.bin");
   if ((fp_inp = fopen(path, "rb")) == NULL) {
-    printf("dns.bin Cannot be opened , exiting \n");
+    printf("fread: dns.bin Cannot be opened , exiting \n");
   }
   if(fread(buff, 1, RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX), fp_inp)<(RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX))){
     printf("Configuration parameters missing in dns.bin \n");
@@ -151,64 +136,13 @@ void main(){
     if(server_config_obj.raida_id!=k){
       //-----init_dns_socket(i,dns_port,dns_ip);
     } */
-    printf("Raida :- %d \tdns :-%s         \t Port Number :-% d\n",k+1, dns_ip,dns_port);
-  }
-  fclose(fp_inp);
     
-    
-  }
-}
-
-/*
-//----------------------------------------------------------
-//Loads dns configuation from dns.bin
-//---------------------------------------------------------
-int load_dns_config() {
-  FILE *fp_inp = NULL;
-  int i = 0,j=0,index=0;
-  unsigned int dns_port;
-  char dns_ip[64],tmp[16];
-  unsigned char buff[RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX)];
-  union coversion{
-    unsigned char data[4];
-    uint32_t val32;
-  }convObj;
-  char path[256];
-  strcpy(path,execpath);
-  strcat(path,"/Data/dns.bin");
-  if ((fp_inp = fopen(path, "rb")) == NULL) {
-    printf("dns.bin Cannot be opened , exiting \n");
-    return 1;
-  }
-  if(fread(buff, 1, RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX), fp_inp)<(RAIDA_SERVER_MAX*(DNS_LEN_MAX+DNS_PORT_MAX))){
-    printf("Configuration parameters missing in dns.bin \n");
-    return 1;
-  }
-  printf("------------------------------\n");
-  printf("DNS Configuration Details..\n");
-  printf("------------------------------\n");
-  index =0;	
-  for (i=0;i<RAIDA_SERVER_MAX;i++) {
-    strcpy(dns_ip,"");
-    for (j=0; j<DNS_LEN_MAX; j++) {
-      sprintf(tmp, "%d", buff[index+j]);
-      strcat(dns_ip,tmp);
-      if(j<DNS_LEN_MAX-1)
-        strcat(dns_ip,"."); 
-    }
-    index=index+DNS_LEN_MAX;
-    convObj.val32 = 0;
-    for (j=0; j<DNS_PORT_MAX; j++) {
-      convObj.data[DNS_PORT_MAX-1-j] = buff[index+j];	
-    }
-    index=index+DNS_PORT_MAX;
-    dns_port = convObj.val32;
-    if(server_config_obj.raida_id!=i){
+    if(i != k){
+      printf("init_dns_socket\n");
       //-----init_dns_socket(i,dns_port,dns_ip);
     }
-    printf("Raida :- %d \tdns :-%s         \t Port Number :-% d\n",i+1, dns_ip,dns_port);
+    printf("Raida :- %d \tdns :-%s    \t Port Number :-% d\n",k+1, dns_ip,dns_port);
   }
   fclose(fp_inp);
-  return 0;
-} 
-*/
+  }
+}

@@ -38,48 +38,41 @@ void getexepath() {
 void main(){
 
 	FILE *fp_inp = NULL;
-	char *file_names[25]={"/deployment_data/raida0/data/shards.bin",
-                        "/deployment_data/raida1/data/shards.bin",
-						            "/deployment_data/raida2/data/shards.bin",
-                        "/deployment_data/raida3/data/shards.bin",
-						            "/deployment_data/raida4/data/shards.bin",
-                        "/deployment_data/raida5/data/shards.bin",
-						            "/deployment_data/raida6/data/shards.bin",
-                        "/deployment_data/raida7/data/shards.bin",
-						            "/deployment_data/raida8/data/shards.bin",
-                        "/deployment_data/raida9/data/shards.bin",
-						            "/deployment_data/raida10/data/shards.bin",
-                        "/deployment_data/raida11/data/shards.bin",
-						            "/deployment_data/raida12/data/shards.bin",
-                        "/deployment_data/raida13/data/shards.bin",
-						            "/deployment_data/raida14/data/shards.bin",
-                        "/deployment_data/raida15/data/shards.bin",
-						            "/deployment_data/raida16/data/shards.bin",
-                        "/deployment_data/raida17/data/shards.bin",
-						            "/deployment_data/raida18/data/shards.bin",
-                        "/deployment_data/raida19/data/shards.bin",
-						            "/deployment_data/raida20/data/shards.bin",
-                        "/deployment_data/raida21/data/shards.bin",
-						            "/deployment_data/raida22/data/shards.bin",
-                        "/deployment_data/raida23/data/shards.bin",
-						            "/deployment_data/raida24/data/shards.bin"};
+	
+  char *file_names[25]={"/opt/raida0/Data/coin_config.bin",
+                        "/opt/raida1/Data/coin_config.bin",
+                        "/opt/raida2/Data/coin_config.bin",
+                        "/opt/raida3/Data/coin_config.bin",
+                        "/opt/raida4/Data/coin_config.bin",
+                        "/opt/raida5/Data/coin_config.bin",
+                        "/opt/raida6/Data/coin_config.bin",
+                        "/opt/raida7/Data/coin_config.bin",
+                        "/opt/raida8/Data/coin_config.bin",
+                        "/opt/raida9/Data/coin_config.bin",
+                        "/opt/raida10/Data/coin_config.bin",
+                        "/opt/raida11/Data/coin_config.bin",
+                        "/opt/raida12/Data/coin_config.bin",
+                        "/opt/raida13/Data/coin_config.bin",
+                        "/opt/raida14/Data/coin_config.bin",
+                        "/opt/raida15/Data/coin_config.bin",
+                        "/opt/raida16/Data/coin_config.bin",
+                        "/opt/raida17/Data/coin_config.bin",
+                        "/opt/raida18/Data/coin_config.bin",
+                        "/opt/raida19/Data/coin_config.bin",
+                        "/opt/raida20/Data/coin_config.bin",
+                        "/opt/raida21/Data/coin_config.bin",
+                        "/opt/raida22/Data/coin_config.bin",
+                        "/opt/raida23/Data/coin_config.bin",
+                        "/opt/raida24/Data/coin_config.bin"};
 
 
-
-  getexepath();
+  //getexepath();
   struct coin_config *coin_config_obj;
 
   for(int k = 0; k < 25; k++) {
 
-  //--------------------------------------
-  //WRITE
-  //---------------------------------------
-    
-
-    //FILE *fp_inp = NULL;
     unsigned char buffer[COIN_CONFIG_BYTES] = {3, 4, 0, 0,3};
     char path[256];
-    strcpy(path,execpath);
     strcat(path, file_names[k]);
     printf("path: %s\n", path);
 
@@ -89,18 +82,14 @@ void main(){
     fwrite(buffer, 1, COIN_CONFIG_BYTES, fp_inp);
     fclose(fp_inp);
 
-  
-  //--------------------------------------
-  //READ
-  //---------------------------------------
+//----------------------------------------------------------------
+
   unsigned int cnt=0,size=0,i=0,index=0,coin_id_max=0;
   unsigned char buff[SERVER_CONFIG_BYTES];
   unsigned int coin_id_cnt;
-  //char path[256];
-  //strcpy(path,execpath);
-  //strcat(path,"/coin_config.bin");
+
   if ((fp_inp = fopen(path, "rb")) == NULL) {
-    perror("coin_config.bin Cannot be opened , exiting \n");
+    perror("fread: coin_config.bin Cannot be opened , exiting \n");
   }
   fseek(fp_inp, 0L, SEEK_END);
   size = ftell(fp_inp);
@@ -108,7 +97,7 @@ void main(){
   if(fread(buff, 1, size, fp_inp)<size){
     printf("Configuration parameters missing in coin_config.bin \n");
   }
-  printf("size: %u\n",size);
+  //printf("size: %u\n",size);
 
   coin_config_obj = (struct coin_config *) malloc(sizeof(struct coin_config)*(size/COIN_CONFIG_BYTES));
   coin_id_cnt = size/COIN_CONFIG_BYTES;
@@ -129,7 +118,7 @@ void main(){
     coin_config_obj[i].page_size |= (((uint16_t)buff[index+1])<<8);
     coin_config_obj[i].no_of_pages = buff[index+4];
     coin_config_obj[i].no_of_pages |= (((uint16_t)buff[index+3])<<8);
-    printf("buff_%d: %d %d %d %d %d\n",i, buff[index+0], buff[index+1],buff[index+2], buff[index+3], buff[index+4]);
+    //printf("buff_%d: %d %d %d %d %d\n",i, buff[index+0], buff[index+1],buff[index+2], buff[index+3], buff[index+4]);
     printf("Coin Id  -: %d ", coin_config_obj[i].coin_id);
     printf("\t AN's per page  -: %d", coin_config_obj[i].page_size);
     printf("\t No of Pages    -: %d\n", coin_config_obj[i].no_of_pages);
