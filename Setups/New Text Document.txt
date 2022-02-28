@@ -1,0 +1,5 @@
+------------------------------
+Coin's Configuration Details..
+------------------------------
+Coin id count -: 1
+Coin Id  -: 3    AN's per page  -: 1024  No of Pages    -: 3
