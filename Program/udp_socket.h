@@ -210,6 +210,12 @@
 //--------------------------------------------------------------------------
 #define FIX_VERSION_1							1			
 #define FIX_VERSION_2							2			
+//--------------------------------------------------------------------------
+#define CMD_SYNC_TRANS_ADD				150
+#define CMD_SYNC_TRANS_DEL				152
+#define CMD_SYNC_TRANS_RESP				154
+//-------------------------------------------------------------------------
+
 extern int sockfd;
 extern unsigned char response_flg;
 extern int32_t key_cnt;
