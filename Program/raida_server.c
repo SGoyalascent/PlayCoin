@@ -68,9 +68,6 @@ int load_server_config() {
     return 1;
   }
 
-  for(int i =0; i < SERVER_CONFIG_BYTES; i++) {
-    printf("buff[%d] = %d \n", i, buff[i]);
-  }
   server_config_obj.raida_id=buff[0];
   server_config_obj.port_number = buff[2];
   server_config_obj.port_number|= (((uint16_t)buff[1])<<8);
