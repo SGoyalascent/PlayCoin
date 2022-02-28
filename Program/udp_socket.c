@@ -6,15 +6,14 @@
 #endif
 
 int sockfd;
-fd_set select_fds,select_dns_fds[RAIDA_SERVER_MAX],select_legacy_fds[RAIDA_SERVER_MAX];                
-struct timeval timeout,dns_timeout[RAIDA_SERVER_MAX],legacy_timeout[RAIDA_SERVER_MAX];
+fd_set select_fds,select_dns_fds[RAIDA_SERVER_MAX];                
+struct timeval timeout,dns_timeout[RAIDA_SERVER_MAX];
 struct dns_config dns_config_obj[RAIDA_SERVER_MAX];     
 union coversion snObj;
 struct coin_id coin_id_obj[255];
 unsigned char response_flg;
 struct sockaddr_in servaddr, cliaddr;
 long time_stamp_before,time_stamp_after;
-struct key_table key_table_obj[ENCRY2_KEYS_MAX]={0};
 unsigned char udp_buffer[UDP_BUFF_SIZE],response[RESPONSE_HEADER_MAX],coin_table_id[5],EN_CODES[EN_CODES_MAX]={0};
 unsigned char free_thread_running_flg;
 pthread_t free_id_ptid;
