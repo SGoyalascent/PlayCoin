@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 
-
+#include "aes.h"
 #include "raida_server.h"
 //--------------------------------------------------------------------
 #define FRAME_TIME_OUT_SECS		1 

@@ -567,7 +567,12 @@ int main(int argc, char *argv[]) {
   int alloc_only = 1;
   welcomeMsg();
   getexepath();
-  if(load_raida_no() || load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() || load_encrypt_key()){
+  /*
+  if(load_raida_no()) {
+    exit(0);
+  }
+  */
+  if(load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() || load_encrypt_key()){
     exit(0);
   }
 
