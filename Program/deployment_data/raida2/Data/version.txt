@@ -1,5 +1,0 @@
-<h1>VERSION: 2021‐08‐10 18:17:54.811</h1>
-<h2>LOCATION: Serbia</h2>
-<h2>Change Log</h2>
-<p>Adds new thing</p>
-<p>Improves Performance</p>

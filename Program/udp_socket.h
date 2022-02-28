@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 
+
 #include "raida_server.h"
 //--------------------------------------------------------------------
 #define FRAME_TIME_OUT_SECS		1 
@@ -133,6 +134,7 @@
 #define PACKET_ORDER_LOSS					31
 #define LEN_OF_BODY_CANT_DIV_IN_COINS			32
 #define INVALID_END_OF_REQ					33
+#define ENCRYPTION_ERROR					34
 #define EMPTY_REQ_BODY						36
 #define VALIDATE_TICKET_CLAIMED_EARLIER			37
 #define VALIDATE_TICKET_CLAIMED				38

@@ -33,6 +33,7 @@ struct thread_args {
 uint8_t encrypt_key[AN_BYTES_CNT];
 unsigned char encrytion_type;
 
+
 //-----------------------------------------------------------
 //Set time out for UDP frames
 //-----------------------------------------------------------
@@ -158,85 +159,93 @@ int listen_request(){
 				}else{
 					frames_expected = buffer[REQ_FC+1];
 					frames_expected|=(((uint16_t)buffer[REQ_FC])<<8);
-					memset(nounce,0,NOUNCE_BYTES_CNT);
-					//We take nouce 5 bytes
-					for(i=0;i<5;i++){
-						nounce[i] = buffer[REQ_NO_1+i];
-					}
-					j=0;
-					//We take nouce 3 bytes 
-					for(i=5;i<8;i++,j++){
-						nounce[i] = buffer[REQ_NO_6+j];
+          memset(nounce,0,NOUNCE_BYTES_CNT);
+            //We take nouce 5 bytes
+          for(i=0;i<5;i++){
+            nounce[i] = buffer[REQ_NO_1+i];
+          }
+          j =0;
 
-					}
-					//check the type of encryption 
-					if(buffer[REQ_EN] == ENCRYP_128_AES_CTR_SN){
-						encrytion_type = ENCRYP_128_AES_CTR_SN;
-						printf("\n ENCRYPTION TYPE := %d \n", encrytion_type);
-						memcpy(buffer_tmp,&buffer[REQ_HEAD_MIN_LEN],n-REQ_HEAD_MIN_LEN);
-						memset(snObj.data,0,4);
-						for(j=0;j<SN_BYTES_CNT;j++){
-							snObj.data[j]=buffer[REQ_SR_N0+(SN_BYTES_CNT-1-j)];
-						}
-						coin_id = buffer[REQ_COIN_ID+1];
-						coin_id |= (((uint16_t)buffer[REQ_COIN_ID])<<8);
-						printf("%d\n",coin_id);
-						printf("%d\n",snObj.val32);
-						if(snObj.val32 >=coin_id_obj[coin_id].AN_CNT){
-							send_err_resp_header(COIN_NO_NOT_FOUND);
-							state = STATE_WAIT_START;
-							err_flg = 1;
-						} else{
-							memcpy(encrypt_key,coin_id_obj[coin_id].AN[snObj.val32],AN_BYTES_CNT);
-							crypt_ctr(encrypt_key,buffer_tmp,n-REQ_HEAD_MIN_LEN,nounce);
-							memcpy(&buffer[REQ_HEAD_MIN_LEN],buffer_tmp,n-REQ_HEAD_MIN_LEN);
-							printf(" encry key\n");
-							for(i=0;i<16;i++){
-								printf("%d,",encrypt_key[i]);
-							}
-							printf("\n nounce \n");
-							for(i=0;i<16;i++){
-								printf("%d,",nounce[i]);
-							}
-	
-							printf("\n After decry");
-							for(i=0;i<n;i++){
-								printf("%d,",buffer[i]);
-							}
-							printf("\n");
-						}
-					}else if (buffer[REQ_EN] == ENCRYP_128_AES_CTR_KEY_TABLE){
-						int key_index;
-						memset(snObj.data,0,4);
-						for(j=0;j<SN_BYTES_CNT;j++){
-							snObj.data[j]=buffer[REQ_SR_N0+(SN_BYTES_CNT-1-j)];
-						}
-						key_index = find_encry2_key(snObj.val32);
-						printf("%d",	snObj.val32);
-						if(key_index == -1){
-							send_err_resp_header(KEY_NOT_CONFIG_ENCRY_2);
-							state = STATE_WAIT_START;
-							err_flg = 1;
-						} else {
-							memcpy(buffer_tmp,&buffer[REQ_HEAD_MIN_LEN],n-REQ_HEAD_MIN_LEN);
-							memcpy(encrypt_key,key_table_obj[key_index].key,KEY_BYTES_CNT);
-							crypt_ctr(encrypt_key,buffer_tmp,n-REQ_HEAD_MIN_LEN,nounce);
-							memcpy(&buffer[REQ_HEAD_MIN_LEN],buffer_tmp,n-REQ_HEAD_MIN_LEN);
-							for(i=0;i<16;i++){
-								printf("%d,",encrypt_key[i]);
-							}
-							printf("\n nounce \n");
-							for(i=0;i<16;i++){
-								printf("%d,",nounce[i]);
-							}
-	
-							printf("\n After decry");
-							for(i=0;i<n;i++){
-								printf("%d,",buffer[i]);
-							}
-							printf("\n");
-						}
-					}
+            //We take nouce 3 bytes 
+          for(i=5;i<8;i++,j++){
+            nounce[i] = buffer[REQ_NO_6+j];
+          }
+                printf("\n 111nounce \n");
+                for(i=0;i<16;i++){
+                  printf("%d,",nounce[i]);
+                }
+                printf("done\n");
+          //check the type of encryption 
+          if(buffer[REQ_EN] == ENCRYP_128_AES_CTR_SN){
+            encrytion_type = buffer[REQ_EN];
+            printf("\n ENCRYPTION TYPE := %d \n", encrytion_type);
+            // 2bytes for 62,62 (signature)
+            memcpy(buffer_tmp,&buffer[REQ_HEAD_MIN_LEN],n-REQ_HEAD_MIN_LEN-2);
+            memset(snObj.data,0,4);
+            for(j=0;j<SN_BYTES_CNT;j++){
+              snObj.data[j]=buffer[REQ_SR_N0+(SN_BYTES_CNT-1-j)];
+            }
+            coin_id = buffer[REQ_COIN_ID+1];
+            coin_id |= (((uint16_t)buffer[REQ_COIN_ID])<<8);
+            memcpy(encrypt_key,coin_id_obj[coin_id].AN[snObj.val32],AN_BYTES_CNT);
+            printf("%d\n",coin_id);
+            printf("%d\n",snObj.val32);
+            if(snObj.val32 >=coin_id_obj[coin_id].AN_CNT){
+              send_err_resp_header(COIN_NO_NOT_FOUND);
+              state = STATE_WAIT_START;
+              err_flg = 1;
+            } else{
+              // 2bytes for 62,62 (signature)
+      				if (frames_expected == 1){
+                crypt_ctr(encrypt_key,buffer_tmp,n-REQ_HEAD_MIN_LEN-2,nounce);
+                memcpy(&buffer[REQ_HEAD_MIN_LEN],buffer_tmp,n-REQ_HEAD_MIN_LEN-2);
+                printf(" encry key\n");
+                for(i=0;i<16;i++){
+                  printf("%d,",encrypt_key[i]);
+                }
+                printf("\n nounce \n");
+                for(i=0;i<16;i++){
+                  printf("%d,",nounce[i]);
+                }
+  
+                printf("\n After decry");
+                for(i=0;i<n;i++){
+                  printf("%d,",buffer[i]);
+                }
+                printf("\n");
+              }
+           }
+          } else if (buffer[REQ_EN] == ENCRYP_128_AES_CTR_KEY_TABLE){
+            int key_index;
+            key_index = find_encry2_key(snObj.val32);
+            printf("%d",	snObj.val32);
+            if(key_index == -1){
+              send_err_resp_header(KEY_NOT_CONFIG_ENCRY_2);
+              state = STATE_WAIT_START;
+              err_flg = 1;
+            } else {
+              // 2bytes for 62,62 (signature)
+      				if (frames_expected == 1){
+                memcpy(buffer_tmp,&buffer[REQ_HEAD_MIN_LEN],n-REQ_HEAD_MIN_LEN-2);
+                memcpy(encrypt_key,key_table_obj[key_index].key,KEY_BYTES_CNT);
+                crypt_ctr(encrypt_key,buffer_tmp,n-REQ_HEAD_MIN_LEN-2,nounce);
+                memcpy(&buffer[REQ_HEAD_MIN_LEN],buffer_tmp,n-REQ_HEAD_MIN_LEN-2);
+                for(i=0;i<16;i++){
+                  printf("%d,",encrypt_key[i]);
+                }
+                printf("\n nounce \n");
+                for(i=0;i<16;i++){
+                  printf("%d,",nounce[i]);
+                }
+    
+                printf("\n After decry");
+                for(i=0;i<n;i++){
+                  printf("%d,",buffer[i]);
+                }
+                printf("\n");
+              }
+            }
+          } // end if frame_expected ==1
 					if(err_flg == 0){
 						memcpy(udp_buffer,buffer,n);
 						index = n;
@@ -259,18 +268,57 @@ int listen_request(){
 				}else{
 					n = recvfrom(sockfd, (unsigned char *)buffer, server_config_obj.bytes_per_frame,MSG_WAITALL, ( struct sockaddr *) &cliaddr,&len);
 					if(client_s_addr==cliaddr.sin_addr.s_addr){
-						if(encrytion_type == ENCRYP_128_AES_CTR_SN){
-							crypt_ctr(encrypt_key,buffer,n,nounce);
-						}else if (buffer[REQ_EN] == ENCRYP_128_AES_CTR_KEY_TABLE){
-							crypt_ctr(encrypt_key,buffer,n,nounce);
-						}
-						memcpy(&udp_buffer[index],buffer,n);
-						index+=n;
 						curr_frame_no++;
 						printf("--------RECVD  FRAME NO ------ %d \n", curr_frame_no);
+						memcpy(&udp_buffer[index],buffer,n);
+						index+=n;
 						if(curr_frame_no==frames_expected){
+              crc = crc32b(&udp_buffer[REQ_HEAD_MIN_LEN], index - REQ_HEAD_MIN_LEN);
+              c1 = crc & 0xff;
+              printf("csum %x , crc=%x (%x)\n",udp_buffer[6], crc,  c1);
+              if (c1 != udp_buffer[6]) {
+      					send_err_resp_header(PACKET_ORDER_LOSS);
+			      		state = STATE_WAIT_START;
+      					printf("Invalid checksum \n");
+                break;
+              }
+
 							state = STATE_END_RECVD;
-						}
+
+              if(udp_buffer[REQ_EN] == ENCRYP_128_AES_CTR_SN){
+                printf("\n 2ENCRYPTION TYPE := %d \n", udp_buffer[REQ_EN]);
+                memcpy(buffer_tmp, &udp_buffer[REQ_HEAD_MIN_LEN],index-REQ_HEAD_MIN_LEN-2);
+                printf("cid=%d\n",coin_id);
+                printf("csn=%d\n",snObj.val32);
+//                printf("\n 2before decry n=%d \n", n);
+  //              for(i=0;i<index;i++){
+    //              printf("%d,",udp_buffer[i]);
+      //          }
+        //        printf("\n");
+                crypt_ctr(encrypt_key,buffer_tmp,index-REQ_HEAD_MIN_LEN-2,nounce);
+                memcpy(&udp_buffer[REQ_HEAD_MIN_LEN],buffer_tmp,index-REQ_HEAD_MIN_LEN-2);
+                //memcpy(&udp_buffer[REQ_HEAD_MIN_LEN],buffer_tmp,index+n);
+                printf("eccc\n");
+                for(i=0;i<16;i++)
+                  printf("%d,",encrypt_key[i]);
+    
+                printf("\n nounce \n");
+                for(i=0;i<16;i++){
+                  printf("%d,",nounce[i]);
+                }
+
+                printf("\n");
+    
+        //        printf("\n 2After decry n=%d \n", n);
+          //      for(i=0;i<index;i++){
+            //      printf("%d,",udp_buffer[i]);
+              //  }
+                printf("\n");
+              }else if (udp_buffer[REQ_EN] == ENCRYP_128_AES_CTR_KEY_TABLE) {
+                //crypt_ctr(encrypt_key,buffer,n,nounce);
+              }
+
+            } 
 					}						
 				}	
 			break;			
@@ -280,25 +328,7 @@ int listen_request(){
 						send_err_resp_header(INVALID_END_OF_REQ);
 						printf("Invalid end of packet  \n");
 					}else{
-            csum = (udp_buffer[6] << 8) | udp_buffer[14];
-            if (frames_expected > 1) {
-              crc = crc32b(&udp_buffer[REQ_HEAD_MIN_LEN], index - REQ_HEAD_MIN_LEN);
-              //c0 = (crc >> 8) & 0xff;
-              c1 = crc & 0xff;
-              printf("csum %x %x, crc=%x (%x %x)\n",udp_buffer[6], udp_buffer[14],  crc, c0, c1);
-
-
-              //if (c0 != udp_buffer[6] && c1 != udp_buffer[14]) {
-              if (c1 != udp_buffer[6]) {
-      					send_err_resp_header(PACKET_ORDER_LOSS);
-			      		state = STATE_WAIT_START;
-      					printf("Invalid checksum \n");
-                break;
-              }
-
-            }
-
-						printf("---------------------END RECVD----------------------------------------------fr=%d b6=%x b14=%x csum=%x\n", frames_expected, udp_buffer[6], udp_buffer[14], csum);
+						printf("---------------------END RECVD----------------------------------------------\n");
 						printf("---------------------PROCESSING REQUEST-----------------------------\n");
 						process_request(index);
 					}
@@ -306,6 +336,35 @@ int listen_request(){
 			break;
 		}
 	}
+}
+//-----------------------------------------------------------
+// receives the request from the same server raida's
+//-----------------------------------------------------------
+void* listen_request_raida(void* arg){
+    int fd1,i=0,len=0;
+    char * myfifo = "/tmp/myfifo";
+    unsigned char status_code=0; 	
+    mkfifo(myfifo, 0666);
+    while(1){
+	    fd1 = open(myfifo,O_RDONLY);
+	    read(fd1, udp_buffer, 64);
+	    close(fd1);
+	    response_flg = FIFO_RESPONSE;
+	    for(i=0;i<COINS_MAX;i++){
+		printf("%d",udp_buffer[i]);
+		if(udp_buffer[i]==0x3E && udp_buffer[i-1]==0x3E){
+			break;
+		}
+	    }
+	    len=i+1;
+	    status_code=validate_request_header(udp_buffer,len);
+	    if(status_code!=NO_ERR_CODE){
+		send_err_resp_header(status_code);	
+	    }else{	
+	    	process_request(len); 
+	    }
+	    response_flg = UDP_RESPONSE;	
+    }	
 }
 //-----------------------------------------------------------
 // Processes the UDP packet 
@@ -319,54 +378,42 @@ void process_request(unsigned int packet_len){
 	coin_id = udp_buffer[REQ_CI+1];
 	coin_id |= (((uint16_t)udp_buffer[REQ_CI])<<8);
 	
+  int b0,b1,b2,b3;
+  uint32_t crc;
+
+  if (cmd_no != CMD_VALIDATE && cmd_no != CMD_SYNC_TRANS_ADD && cmd_no != CMD_SYNC_TRANS_DEL && cmd_no != CMD_SYNC_TRANS_RESP && cmd_no != CMD_ECHO && cmd_no != CMD_VERSION) {
+    printf("validating encryption/decryption hash\n");
+
+    crc = crc32b(&udp_buffer[REQ_HEAD_MIN_LEN], 12);
+    for (i=0; i<16; i++) {
+      printf("%d ", udp_buffer[REQ_HEAD_MIN_LEN+i]);
+    }
+
+    b0 = (crc >> 24) & 0xff;
+    b1 = (crc >> 16) & 0xff;
+    b2 = (crc >> 8) & 0xff;
+    b3 = (crc) & 0xff;
+
+    printf("h=%x %d %d %d %d\n", crc, b0, b1, b2, b3);
+    if (b0 != udp_buffer[REQ_HEAD_MIN_LEN+12] || b1 != udp_buffer[REQ_HEAD_MIN_LEN+13] || b2 != udp_buffer[REQ_HEAD_MIN_LEN+14] || b3 != udp_buffer[REQ_HEAD_MIN_LEN+15]) {
+      printf("Hash mismatch\n");
+	    send_err_resp_header(ENCRYPTION_ERROR);
+      return;
+    }
+
+  }
+
+  
+
+
 	switch(cmd_no){
 		case CMD_POWN : 					execute_pown(packet_len,coin_id);break;
 		case CMD_DETECT : 					execute_detect(packet_len,coin_id);break;
 		case CMD_FIND : 					execute_find(packet_len,coin_id);break;
-		
-		//case CMD_FIX :						execute_fix(packet_len,coin_id,FIX_VERSION_1);break;
-		
 		case CMD_FIX_V2 :					execute_fix(packet_len,coin_id,FIX_VERSION_2);break;
 		case CMD_ECHO:						execute_echo(packet_len);break;
-		case CMD_VALIDATE : 					execute_validate(packet_len,coin_id);break;
-		
-		//case CMD_PUT_KEY:					execute_put_key(packet_len);break;
-		//case CMD_GET_KEY:					execute_get_key(packet_len);break;
-		//case CMD_IDENTIFY : 					execute_identify(packet_len,coin_id);break;
-		
-		case CMD_GET_TICKET :				execute_get_ticket(packet_len,coin_id);break;
-		
-		//case CMD_VERSION:					execute_version();break;	
-		case CMD_NEWS:						execute_news();break;	
-		case CMD_LOGS:						execute_logs(packet_len);break;
-		case CMD_PANG : 					execute_pang(packet_len,coin_id);break;
-		case CMD_BECOME_PRIMARY:				execute_become_primary(packet_len);break;
-		case CMD_BECOME_MIRROR:				execute_become_mirror(packet_len);break;
-		case CMD_CHECK_UPDATES:				execute_check_updates(packet_len);break;
-		case CMD_FREE_ID_VER_0:				execute_free_id(packet_len,FREE_ID_VER_0);break;
-		case CMD_FREE_ID_VER_1:				execute_free_id(packet_len,FREE_ID_VER_1);break;
-		case CMD_DEPOSITE:					execute_deposite(packet_len);break;
-		case CMD_DEPOSITE_PANG:				execute_deposite_pang(packet_len);break;
-		case CMD_WITHDRAW:					execute_withdraw(packet_len);break;
-		case CMD_TRANSFER:					execute_transfer(packet_len);break;
-		case CMD_SHOW_BALANCE:				execute_show_balance(packet_len);break;
-		case CMD_SHOW_REGISTRY: 				execute_show_registry(packet_len);break;
-		case CMD_SHOW_COINS_DENOM:			execute_show_by_denom(packet_len);break;
-		case CMD_SHOW_COINS_BY_TYPE:			execute_show_by_coin_type(packet_len);break;
-		case CMD_SHOW_CHANGE:				execute_show_change(packet_len);break;
-		case CMD_JOIN	:					execute_join(packet_len);break;
-		case CMD_JOIN_IN_BANK:				execute_join_in_bank(packet_len);break;
-		case CMD_BREAK:					execute_break(packet_len);break;
-		case CMD_BREAK_IN_BANK:				execute_break_in_bank(packet_len);break;
-		case CMD_SHOW_STATEMENT:			execute_show_statement(packet_len);break;
-		case CMD_DEL_ALL_STATEMENT:			execute_del_statements(packet_len);break;
-		case CMD_SHOW_PAYMENT:				execute_show_payment(packet_len);break;
-		case CMD_CHANGE_COIN_TYPE:			execute_change_coin_type(packet_len);break;
-		case CMD_SYNC_TRANS_ADD :   			execute_sync_trans_add(packet_len);break;
-		case CMD_SYNC_TRANS_DEL :   			execute_sync_trans_del(packet_len);break;
-		case CMD_SYNC_TRANS_RESP :   			execute_sync_trans_resp(packet_len);break;
-		case CMD_UPGRADE_COIN	:			execute_upgrade_coin(packet_len);break;	
-		case CMD_COIN_CLAIM 	:			execute_coin_claim(packet_len);break;	
+		case CMD_VALIDATE : 				execute_validate(packet_len,coin_id);break;
+		case CMD_GET_TICKET :				execute_get_ticket(packet_len,coin_id);break;	
 		default:							send_err_resp_header(INVALID_CMD);	
 	}
 	
@@ -628,118 +675,6 @@ void execute_pown(unsigned int packet_len,unsigned int coin_id){
 	}
 	send_response(status_code,size);
 }
-
-// PANG
-void execute_pang(unsigned int packet_len,unsigned int coin_id){
-	int req_body_without_coins = CH_BYTES_CNT + CMD_END_BYTES_CNT + PG_BYTES_CNT,bytes_per_coin = SN_BYTES_CNT+AN_BYTES_CNT;
-	int req_header_min, no_of_coins,ticket_no=0;
-	unsigned int i=0,index=0,j=0,pass_cnt=0,fail_cnt=0,size=0;
-	unsigned char status_code,pass_fail[COINS_MAX]={0};
-  unsigned char pg[PG_BYTES_CNT], md_output[64], tmp[64], md_input[64];
-  int offset;
-	time_t now = time(0);
-	struct tm *t = gmtime(&now);
-	printf("PANG Command \n");
-	no_of_coins = validate_request_body(packet_len,bytes_per_coin,req_body_without_coins,&req_header_min);
-	if(no_of_coins <=0){
-    printf("INVALID NUMBDER OF COINS\n");
-		return;
-	}
-
-  offset = req_header_min + CH_BYTES_CNT;
-  memcpy(pg, &udp_buffer[offset], PG_BYTES_CNT);
-	offset += PG_BYTES_CNT;
-
-  printf("pg \n");
-  for (i = 0; i < PG_BYTES_CNT; i++) {
-    printf("%d ", pg[i]);
-  }
-  printf("\n");
-
-	ticket_no=rand();
-	for(i=0;i<no_of_coins;i++) {
-		index = (i * bytes_per_coin) + offset;
-		memset(snObj.data,0,4);
-		for(j=0;j<SN_BYTES_CNT;j++)
-			snObj.data[j]=udp_buffer[index+(SN_BYTES_CNT-1-j)];
-
-    printf("gotsn %d\n", snObj.val32);
-		if(snObj.val32 >=coin_id_obj[coin_id].AN_CNT){
-      printf("gotsn %d not found\n", snObj.val32);
-			send_err_resp_header(COIN_NO_NOT_FOUND);
-			return;
-		}
-		index +=SN_BYTES_CNT;
-		pass_fail[i]=1;
-
-    printf("sn %d an\n", snObj.val32);
-  for (j = 0; j < 16; j++) {
-    printf("%d ", udp_buffer[index + i]);
-  }
-  printf("\n");
-
-
-		if(memcmp(coin_id_obj[coin_id].AN[snObj.val32],&udp_buffer[index],AN_BYTES_CNT)!=0){
-      printf("failed\n");
-
-			pass_fail[i]=0;
-			fail_cnt++;
-		}		
-      printf("continue\n");
-
-
-		if(pass_fail[i]==1){
-			add_ticket(coin_id,ticket_no,snObj.val32);	
-			index +=AN_BYTES_CNT;
-
-				sprintf(md_input, "%d", udp_buffer[REQ_RI]);
-				sprintf(tmp, "%d", snObj.val32);
-				strcat(md_input,tmp);
-				printf("mdinput now=%s\n",md_input);
-				for(j=0;j<PG_BYTES_CNT;j++){		
-          printf("j=%d v=%02x %d\n", j, pg[j], pg[j]);
-					sprintf(tmp, "%02x", pg[j]);
-  				strcat(md_input,tmp);
-				}
-				printf("o=%s\n",md_input);
-				md5(md_input,md_output);
-				printf("r=%s\n",md_output);
-
-
-			memcpy(coin_id_obj[coin_id].AN[snObj.val32],md_output,AN_BYTES_CNT);
-
-			coin_id_obj[coin_id].MFS[snObj.val32]=t->tm_mon+1;
-			coin_config_obj[coin_id].pages_changed[((snObj.val32)/coin_config_obj[coin_id].page_size)]=1;
-			pass_cnt++;	
-		}			
-	}
-	status_code = MIX;
-	if (fail_cnt == no_of_coins){
-		status_code = ALL_FAIL;
-	}else if(pass_cnt == no_of_coins){
-		status_code = ALL_PASS;
-	}
-	index = RES_HS+HS_BYTES_CNT;
-	size    =  RES_HS+HS_BYTES_CNT;
-	if(status_code == ALL_PASS || status_code == MIX){
-		snObj.val32 = ticket_no;
-		for(j=0;j<MS_BYTES_CNT;j++)
-			response[index+j]=snObj.data[MS_BYTES_CNT-1-j];
-		index+=MS_BYTES_CNT;
-		size+=MS_BYTES_CNT;
-	}
-	if(status_code == MIX){
-		for(i=0;i<no_of_coins;i++){
-			if( pass_fail[i]==1)
-				response[index + (i/8)] |= 1<<(i%8);
-		}
-		size +=no_of_coins/8;
-		if((no_of_coins % 8)!=0)
-			size ++;		
-	}
-	send_response(status_code,size);
-}
-
 
 //---------------------------------------------------------------
 // GET_TICKET COMMAND  11
@@ -1169,6 +1104,7 @@ void execute_echo(unsigned int packet_len){
 	size    =  RES_HS+HS_BYTES_CNT;
 	send_response(SUCCESS,size);
 }
+
 //-----------------------------------------------------------------
 //VALIDATE COMMAND 5
 //-----------------------------------------------------------------
