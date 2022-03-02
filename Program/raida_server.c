@@ -59,6 +59,7 @@ int load_server_config() {
   char path[256];
   strcpy(path,execpath);
   strcat(path,"/Data/server.bin");
+  printf("path: %s\n", path);
   if ((fp_inp = fopen(path, "rb")) == NULL) {
     printf("server.bin Cannot be opened , exiting \n");
     return 1;
@@ -118,6 +119,7 @@ int load_coin_config(){
   char path[256];
   strcpy(path,execpath);
   strcat(path,"/Data/coin_config.bin");
+  printf("path: %s\n", path);
   if ((fp_inp = fopen(path, "rb")) == NULL) {
     printf("coin_config.bin Cannot be opened , exiting \n");
     return 1;
@@ -170,6 +172,7 @@ int load_shards_config() {
   char path[256];
   strcpy(path,execpath);
   strcat(path,"/Data/shards.bin");
+  printf("path: %s\n", path);
   if ((fp_inp = fopen(path, "rb")) == NULL) {
     printf("shards.bin Cannot be opened , exiting \n");
     return 1;
@@ -208,6 +211,7 @@ int load_dns_config() {
   char path[256];
   strcpy(path,execpath);
   strcat(path,"/Data/dns.bin");
+  printf("path: %s\n", path);
   if ((fp_inp = fopen(path, "rb")) == NULL) {
     printf("dns.bin Cannot be opened , exiting \n");
     return 1;
@@ -253,6 +257,7 @@ int load_encrypt_key(){
   char path[256];
   strcpy(path,execpath);
   strcat(path,"/Data/encryption_key.bin");
+  printf("path: %s\n", path);
   printf("------------------------------\n");
   printf("ENCRYPTION CONFIG KEY ..\n");
   printf("------------------------------\n");
@@ -424,7 +429,8 @@ void getexepath()
     }
     i++;
   }	
-  strncpy(execpath,buff,slash_pos);
+  //strncpy(execpath,buff,slash_pos);
+  strncpy(execpath,"/opt/raida0");
 }
 //-------------------------------------------------------------
 // update pages
