@@ -73,7 +73,7 @@ void main(){
 
     unsigned char buffer[COIN_CONFIG_BYTES] = {3, 4, 0, 0,3};
     char path[256];
-    strcat(path, file_names[k]);
+    strcpy(path, file_names[k]);
     printf("path: %s\n", path);
 
     if ((fp_inp = fopen(path, "wb")) == NULL) {

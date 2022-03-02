@@ -1,0 +1,1 @@
+1. gcc coin_config.c -o coin
