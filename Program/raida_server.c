@@ -299,7 +299,7 @@ int load_encrypt_key(){
 //----------------------------------------------------------
 //configure Authentication numbers 
 //---------------------------------------------------------
-int configure_an(unsigned int index, int alloc_only){
+int configure_an(unsigned int index){
 
   FILE *fp_inp = NULL;
   unsigned int i = 0,j=0,an_cnt,no_of_bytes,size;
@@ -310,9 +310,7 @@ int configure_an(unsigned int index, int alloc_only){
   coin_config_obj[index].pages_changed = (unsigned char *) malloc(sizeof(unsigned char) * coin_config_obj[index].no_of_pages);
   memset(coin_config_obj[index].pages_changed,sizeof(unsigned char) * coin_config_obj[index].no_of_pages,0);
   // We don't need to generate anything 
-  if (alloc_only) {
-    return 0;
-  }
+  
   for(i=0;i<coin_config_obj[index].no_of_pages;i++){
     printf("\n Creating AN's for coin_%d Please wait... \n",index);
     strcpy(path,execpath);
@@ -581,7 +579,7 @@ int main(int argc, char *argv[]) {
   if(load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() /*|| load_encrypt_key()*/){
     exit(0);
   }
-
+/*
   printf("argc: %d\n", argc);
   if (argc > 1) {
     alloc_only = atoi(argv[1]);
@@ -590,6 +588,12 @@ int main(int argc, char *argv[]) {
 
   for(i=0;i<coin_id_cnt;i++){
     if(configure_an(i, alloc_only)){
+      exit(0);
+    }
+  }
+*/
+  for(i=0;i<coin_id_cnt;i++){
+    if(configure_an(i)){
       exit(0);
     }
   }
