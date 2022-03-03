@@ -126,8 +126,10 @@ int load_coin_config(){
   }
   fseek(fp_inp, 0L, SEEK_END);
   size = ftell(fp_inp);
+  printf("size: %u\n",size);
   fseek(fp_inp, 0L, SEEK_SET);
   if(fread(buff, 1, size, fp_inp)<size){
+    printf("size: %u\n",size);
     printf("Configuration parameters missing in coin_config.bin \n");
     return 1;
   }
@@ -430,7 +432,7 @@ void getexepath()
     i++;
   }	
   //strncpy(execpath,buff,slash_pos);
-  strncpy(execpath,"/opt/raida0");
+  strcpy(execpath,"/opt/raida0");
 }
 //-------------------------------------------------------------
 // update pages

@@ -75,13 +75,13 @@ void main(){
     char path[256];
     strcpy(path, file_names[k]);
     printf("path: %s\n", path);
-
+/*
     if ((fp_inp = fopen(path, "wb")) == NULL) {
       perror("fwrite: shards.bin Cannot be opened , exiting \n");
     }
     fwrite(buffer, 1, COIN_CONFIG_BYTES, fp_inp);
     fclose(fp_inp);
-
+*/
 //----------------------------------------------------------------
 
   unsigned int cnt=0,size=0,i=0,index=0,coin_id_max=0;
@@ -93,11 +93,12 @@ void main(){
   }
   fseek(fp_inp, 0L, SEEK_END);
   size = ftell(fp_inp);
+  printf("size: %u\n",size);
   fseek(fp_inp, 0L, SEEK_SET);
   if(fread(buff, 1, size, fp_inp)<size){
     printf("Configuration parameters missing in coin_config.bin \n");
   }
-  //printf("size: %u\n",size);
+
 
   coin_config_obj = (struct coin_config *) malloc(sizeof(struct coin_config)*(size/COIN_CONFIG_BYTES));
   coin_id_cnt = size/COIN_CONFIG_BYTES;
