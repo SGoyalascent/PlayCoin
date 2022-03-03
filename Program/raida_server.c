@@ -578,7 +578,7 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
   */
-  if(load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() || load_encrypt_key()){
+  if(load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() /*|| load_encrypt_key()*/){
     exit(0);
   }
 
