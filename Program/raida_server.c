@@ -314,7 +314,7 @@ int configure_an(unsigned int index, int alloc_only){
     return 0;
   }
   for(i=0;i<coin_config_obj[index].no_of_pages;i++){
-    printf("\n Creating AN's for coin  %d Please wait... \n",index);
+    printf("\n Creating AN's for coin_%d Please wait... \n",index);
     strcpy(path,execpath);
     strcat(path,"/Data/coin_3");
     strcpy(mkdir_path,"mkdir -m 777 >>/dev/null 2>>/dev/null ");
@@ -360,7 +360,7 @@ int load_an(unsigned int index,unsigned int coin_id){
   unsigned char buff[AN_BYTES_CNT+MS_BYTES_CNT];
   char str_page_no[16],str_coin_id[16],path[256];
   printf("\n------------------------------\n");
-  printf("%d AN  Details.. \n", coin_id);
+  printf(" AN  Details.. \n", coin_id);
   printf("------------------------------\n");
   an_cnt=coin_config_obj[index].no_of_pages * coin_config_obj[index].page_size;
   coin_id_obj[coin_id].AN_CNT =  an_cnt;
@@ -381,8 +381,8 @@ int load_an(unsigned int index,unsigned int coin_id){
     strcat(path,".bin");
     //puts(path);
     if ((fp_inp = fopen(path, "rb")) == NULL) {
-      printf("%s",path);
-      printf("Cannot be opened , exiting \n");
+      printf("%s\n",path);
+      printf("Cannot be opened, exiting \n");
       return 1;
     }
     for(j=0;j<coin_config_obj[index].page_size;j++){
@@ -582,6 +582,7 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
+  printf("argc: %d\n", argc);
   if (argc > 1) {
     alloc_only = atoi(argv[1]);
     printf("Alloc only %d", alloc_only);
