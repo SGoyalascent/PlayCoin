@@ -16,6 +16,23 @@ struct my_id_coins *my_id_coins_obj;
 void welcomeMsg() {
   printf("\nWelcome to PLAYCOIN\n");
 }
+//---------------------------------------------------------
+// Get the current directory path starting from home dir
+//---------------------------------------------------------
+void getexepath()
+{
+  char buff[256];
+  int count = readlink( "/proc/self/exe", buff, 256);
+  int i=0,slash_pos;
+  while(buff[i]!='\0'){
+    if(buff[i]=='/'){
+      slash_pos = i;
+    }
+    i++;
+  }	
+  //strncpy(execpath,buff,slash_pos);
+  strcpy(execpath,"/opt/raida0");
+}
 //----------------------------------------------------------
 //Loads raida no from raida_no.txt
 //----------------------------------------------------------
@@ -417,23 +434,7 @@ long get_time_cs()
   //    printf("Current time: %"PRIdMAX".%03ld seconds since the Epoch\n",(intmax_t)s, ms);
   return ms;	
 }
-//---------------------------------------------------------
-// Get the current directory path starting from home dir
-//---------------------------------------------------------
-void getexepath()
-{
-  char buff[256];
-  int count = readlink( "/proc/self/exe", buff, 256);
-  int i=0,slash_pos;
-  while(buff[i]!='\0'){
-    if(buff[i]=='/'){
-      slash_pos = i;
-    }
-    i++;
-  }	
-  //strncpy(execpath,buff,slash_pos);
-  strcpy(execpath,"/opt/raida0");
-}
+
 //-------------------------------------------------------------
 // update pages
 //-------------------------------------------------------------
