@@ -312,7 +312,7 @@ int configure_an(unsigned int index){
   // We don't need to generate anything 
   
   for(i=0;i<coin_config_obj[index].no_of_pages;i++){
-    printf("\n Creating AN's for coin_%d Please wait... \n",index);
+    printf("\n Creating AN's for coin_%d Please wait... \n",coin_config_obj[index].coin_id);
     strcpy(path,execpath);
     strcat(path,"/Data/coin_3");
     strcpy(mkdir_path,"mkdir -m 777 >>/dev/null 2>>/dev/null ");
@@ -358,7 +358,7 @@ int load_an(unsigned int index,unsigned int coin_id){
   unsigned char buff[AN_BYTES_CNT+MS_BYTES_CNT];
   char str_page_no[16],str_coin_id[16],path[256];
   printf("\n------------------------------\n");
-  printf(" AN  Details.. \n", coin_id);
+  printf(" AN  Details.. \n");
   printf("------------------------------\n");
   an_cnt=coin_config_obj[index].no_of_pages * coin_config_obj[index].page_size;
   coin_id_obj[coin_id].AN_CNT =  an_cnt;
@@ -368,7 +368,7 @@ int load_an(unsigned int index,unsigned int coin_id){
   coin_id_obj[coin_id].TICKETS =(struct master_ticket **) malloc(an_cnt *sizeof(struct master_ticket *));
   sprintf((char*)str_coin_id,"%d",coin_id);
   for(i=0;i<coin_config_obj[index].no_of_pages;i++){
-    printf("\n Loading AN's for coin  %d Please wait... \n",coin_id);
+    printf("\n Loading AN's for coin_%d Please wait... \n",coin_id);
     strcpy(path,execpath);
     strcat(path,"/Data/coin_3");
     strcat(path,"/ANs/");
@@ -502,7 +502,7 @@ int rename_an_files(unsigned int index,unsigned int coin_id){
   unsigned int i=0,j=0,k=0,an_index=0, an_cnt;
   char str_page_no[16],str_page_no_tmp[16],str_coin_id[16],path[256],tmp[256];
   printf("\n------------------------------\n");
-  printf("%d AN  Details.. \n", coin_id);
+  printf(" AN  Details.. \n");
   printf("------------------------------\n");
   //	coin_config_obj[index].no_of_pages = 4;
   sprintf((char*)str_coin_id,"%d",coin_id);
