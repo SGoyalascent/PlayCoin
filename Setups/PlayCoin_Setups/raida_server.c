@@ -67,10 +67,6 @@ int load_server_config() {
     printf("Configuration parameters missing in server.bin \n");
     return 1;
   }
-
-  for(int i =0; i < SERVER_CONFIG_BYTES; i++) {
-    printf("buff[%d] = %d \n", i, buff[i]);
-  }
   server_config_obj.raida_id=buff[0];
   server_config_obj.port_number = buff[2];
   server_config_obj.port_number|= (((uint16_t)buff[1])<<8);
@@ -293,10 +289,9 @@ int configure_an(unsigned int index, int alloc_only){
     return 0;
   }
   for(i=0;i<coin_config_obj[index].no_of_pages;i++){
-    printf("\n Creating AN's for coin  %d Please wait... \n",coin_config_obj[index].coin_id);
+    printf("\n Creating AN's for coin  %d Please wait... \n",index);
     strcpy(path,execpath);
-    strcat(path,"/Data/coin_");
-    strcat(path,str_coin_id);
+    strcat(path,"/Data/coin_3");
     strcpy(mkdir_path,"mkdir -m 777 >>/dev/null 2>>/dev/null ");
     strcat(mkdir_path,path);
     system(mkdir_path);
@@ -322,7 +317,7 @@ int configure_an(unsigned int index, int alloc_only){
       fseek(fp_inp,no_of_bytes,SEEK_SET);	
       for(j=0;j<(coin_config_obj[index].page_size*(AN_BYTES_CNT+MFS_BYTES_CNT))-no_of_bytes;j++){
         //srand(j);
-        num[0] = (rand() % (upper - lower + 1)) + lower;
+        num[0] = 0;// (rand() % (upper - lower + 1)) + lower;
         fwrite(num,1,1,fp_inp);
       }
       printf(".");
@@ -568,12 +563,7 @@ int main(int argc, char *argv[]) {
   int alloc_only = 1;
   welcomeMsg();
   getexepath();
-  /*
-  if(load_raida_no()) {
-    exit(0);
-  }
-  */
-  if(load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() || load_encrypt_key()){
+  if(load_raida_no() || load_server_config()  || load_coin_config() || load_shards_config()  || load_dns_config() || load_encrypt_key()){
     exit(0);
   }
 
@@ -593,13 +583,13 @@ int main(int argc, char *argv[]) {
     }
   }
   srand(time(NULL));
-  init_udp_socket();
+  //init_udp_socket();
   pthread_t ptid[4];
-  pthread_create(&ptid[0], NULL, &backup_an_thread, NULL);
-  
+  //pthread_create(&ptid[0], NULL, &backup_an_thread, NULL);
+  /*
   while(1) {
     listen_request();
-  } 
-  rename_an_files(1,1);
+  } */
+  //rename_an_files(1,1);
   return 0;
 }
